@@ -1,0 +1,34 @@
+We will create and load the data into table restate:-
+---------------------------------------------------------------
+create table restate (street string, cityname string, zipcode int, state string, beds int, baths int, sq_feet int, flat_type string, sale_date string, price int, latitude float, longitude float) row format delimited fields terminated by ',' stored as textfile;
+
+load data local inpath 'real_estate.csv' into table restate;
+
+-----------------------------------------------------------------
+1) List all the Residential which is not less than ten thousand.
+
+select * from restate where ((price>10000) AND (flat_type==’Residential’)) ;
+
+2) In SACRAMENTO city which residential type has more than 800sq__ft. Display their respective details street,sq__ft,sale_date,city.
+
+Select street,sq_feet,sale_date,cityname from restate where ((cityname=='SACRAMENTO') AND (sq_feet>800));
+
+3) Which is the cheapest Condo in CA. name the city,street and price for the Condo
+
+Select street,cityname,price from restate where flat_type=='Condo' order by price limit 1;
+
+4) List top 5 residency details which lie in the budget of 50000-100000, an area more than 1250, min bedroom 3 and, min bathroom 2.
+
+Select street, cityname, zipcode, state, beds, baths, sq_feet, flat_type, sale_date, price from restate where((price>=50000 and price<=100000) AND (sq_feet > 1250) AND (beds > 2) AND (baths > 1)) order by price limit 5;
+
+5) Create a new partitioned table having separate list of residential apartments with more than 2 beds. Table should have following attributes/fields:-
+Cityname
+Baths
+sq_feet
+price
+flat_type
+beds
+
+CREATE TABLE res_apartments( cityname string,baths int,sq_feet int,price int) partitioned BY (flat_type string,beds int)row format delimited FIELDS terminated BY ',' stored AS textfile;  
+insert into table res_apartments partition(flat_type,beds) select cityname,baths,sq_feet,price,flat_type,beds from restate where (beds>2 and flat_type='Residential');
+describe res_apartments;

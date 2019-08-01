@@ -1,0 +1,31 @@
+1) Create a database(library), table(myBooks) and describe the table
+-----------------------------------------------------------------------
+CREATE DATABASE IF NOT EXISTS library;
+DROP TABLE IF EXISTS myBooks;
+CREATE TABLE IF NOT EXISTS myBooks (ISBN STRING, BookTitle STRING,
+BookAuthor STRING, YearOfPublication STRING, Publisher STRING,
+ImageURLS STRING, ImageURLM STRING, ImageURLL STRING) COMMENT
+'Books Table' ROW FORMAT DELIMITED FIELDS TERMINATED BY "\073"
+STORED AS TEXTFILE;
+DESCRIBE myBooks;
+
+
+-----------------------------------------------------------------------
+2) Load the data into the table myBooks
+LOAD DATA INPATH 'C:/Books.csv' OVERWRITE INTO TABLE myBooks;
+
+----------------------------------------------------------------------
+3) Find the unique books titles
+SELECT count(DISTINCT bookTitle) FROM myBooks;
+-------------------------------------------------------------------
+4) Find how many books are published in every year
+SELECT YearOfPublication, count(BookTitle) FROM myBooks GROUP BY
+YearOfPublication;
+----------------------------------------------------------------
+5) Find the books that have been published more than once
+SELECT booktitle, count(booktitle) as bookCount FROM myBooks GROUP BY
+booktitle HAVING bookCount > 1;
+--------------------------------------------------------------------
+6) Find the top five publishers
+SELECT Publisher, count(Publisher) as publisherCount FROM myBooks
+GROUP BY Publisher ORDER BY publisherCount DESC LIMIT 5;

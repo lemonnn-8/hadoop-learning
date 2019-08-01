@@ -1,0 +1,33 @@
+
+Dataset description
+
+Occupation- Job title as given from BLS.
+All_workers- Number of workers male and female, in thousands.
+All_weekly- Average weekly income including male and female workers, in USD.
+M_workers- Number of male workers, in thousands.
+M_weekly- Average weekly income for male workers, in USD.
+F_workers- Number of female workers, in thousands.
+F_weekly- Average weekly income for female workers, in USD.
+
+val a = sc.textFile("inc_occ_gender3.csv")
+val header = a.first
+val data1 = a.filter( _ != header)
+val row1 = data1.first
+val data = data1.filter(_ != row1)
+case class Income(Occupation:String,All_workers:Int,All_weekly:Int,M_workers:Int,M_weekly:Int,F_workers:Int,F_weekly:Int)
+val income_ds = data.map(_.split(",")).map(x => Income(x(0),x(1).toInt,x(2).toInt,x(3).toInt,x(4).toInt,x(5).toInt,x(6).toInt)).toDS()
+income_ds.printSchema
+income_ds.show()
+income_ds.createOrReplaceTempView("salaries")
+
+1)List out top 10 occupations with highest weekly income
+spark.sql("select occupation,all_weekly from salaries order by all_weekly desc").show(10)
+
+2)List out top 10 occupations where female staff are more in number
+spark.sql("select occupation,f_workers,m_workers from salaries where f_workers > m_workers order by f_workers desc").show(10)
+
+3)List out top 10 occupations with more female income
+spark.sql("select occupation,f_weekly from salaries where f_weekly > m_weekly order by f_weekly desc").show(10)
+
+4)Income gap between males and females in America
+spark.sql("select sum(f_weekly)-sum(m_weekly) from salaries").show()

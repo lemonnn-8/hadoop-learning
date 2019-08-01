@@ -1,0 +1,44 @@
+Download the data : https://data.sfgov.org/widgets/nuek-vuh3
+
+The file size is approximately 1.4 GB and it contains approximately 4.35 million rows in 34 columns. The data includes all fire units’ responses to calls. Each record includes the call number, incident number, address, unit identifier, call type, and disposition.
+
+
+1) Load the data from file “fire.csv” into dataframe “input_df”
+------------------------------------------------------------------
+scala> val input_df = spark.read.format("com.databricks.spark.csv").option("header", "true").option("delimiter",",").load("fire.csv")
+
+------------------------------------------------------------------
+2) In the Data Frame
+a) Retrieve the first 5 records
+b) Print just the column names
+c) Count the total number of rows
+d) Print the schema of the data
+------------------------------------------------------------------
+a) scala> input_df.show(5)
+b) scala> input_df.columns
+c) scala> input_df.count()
+d) scala> input_df.printSchema()
+
+-------------------------------------------------------------------
+3) How many incidents of each type were there
+-------------------------------------------------------------------
+scala> input_df.select("Call Type").groupBy("Call Type").count().orderBy("count").show()
+
+-------------------------------------------------------------------
+
+4) Use SQL queries to answer the following:
+a) Print the schema of “fire” table
+b) Count the number of rows in data
+c) Show all the distinct city names in the table
+d) Arrange the city names returned in b) in lexicographical order
+e) List all the distinct ‘Priorities’ in table
+f) Which neighborhood generated the most number of calls
+-------------------------------------------------------------------
+scala> input_df.createOrReplaceTempView("fire")
+a) scala> val x = spark.sql("DESC fire").show()
+b) scala> val x = spark.sql("SELECT count(*) FROM fire").show()
+c) scala> val x = spark.sql("SELECT distinct City FROM fire").show()
+d) scala> val x = spark.sql("SELECT distinct City FROM fire ORDER BY City").show()
+e) scala> val x = spark.sql("SELECT distinct Priority FROM
+fire").show()
+f) scala> val x = spark.sql("SELECT City,count(`Zipcode of Incident`) AS Zip_Count FROM fire GROUP BY City ORDER BY `Zip_Count` DESC").show()

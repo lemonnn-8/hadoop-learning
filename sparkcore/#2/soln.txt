@@ -1,0 +1,53 @@
+
+Problem Statement 1
+Top 20 destination people travel the most: Based on the given data,
+we can find the most popular destination that people travel
+frequently. There are many destinations out of which we will find
+only first 20, based on trips booked for destinations.
+-------------------------------------------------------------------
+Solution:
+val textFile =
+sc.textFile("TravelData.txt")
+val split = textFile.map(lines=>lines.split('\t'))
+val dest = split.map(x=>(x(2),1))
+val reduce= dist.reduceByKey(_+_).map(item =>item.swap).sortByKey(false).take(20)
+
+---------------------------------------------------------------------
+Problem Statement 2
+Top 20 cities that generate high airline revenues for travel, so that
+the site can concentrate on offering discount on booking, to those
+cities to attract more bookings.
+---------------------------------------------------------------------
+Solution:
+val fil = textFile.map(x=>x.split('\t')).filter(x=>{if((x(3).matches(("1"))))
+true else false })
+val cnt = fil.map(x=>(x(2),1)).reduceByKey(_+_).map(item =>
+item.swap).sortByKey(false).take(20)
+
+----------------------------------------------------------------------
+Problem Statement 3
+calculate the minimum as well as the maximum Salariesper
+Department
+----------------------------------------------------------------------
+Solution:
+val textFile = sc.textFile("emp.txt")
+def getNumericSal(sal : String): String = {
+val newSal = sal.replace("\"","").replace("$","").replace(",","").trim;
+return newSal
+}
+val mappedRdd = textFile.map(line => {val arr = line.split("\t"); val
+dept = arr(1); val sal = getNumericSal(arr(5)); (dept,sal)})
+val reducedRdd1 = mappedRdd.reduceByKey((a,b) => {if(a>b) a else b})
+val reducedRdd2 = mappedRdd.reduceByKey((a,b) => {if(a>b) b else a})
+val result = reducedRdd1 join reducedRdd2
+result.collect
+
+------------------------------------------------------------------------
+Problem Statement 4
+Find the total six month average amount based on each merchant id
+which are found to be fraud.
+-----------------------------------------------------------------------
+Solution:
+Select Merchant_id, sum(six_month_avg_chbk_amt),isFradulent
+from creditcard where isFradulent='Y' group by
+Merchant_id,isFradulent;
